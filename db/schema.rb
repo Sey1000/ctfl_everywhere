@@ -10,12 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180313174357) do
+ActiveRecord::Schema.define(version: 20180313181711) do
 
   create_table "missions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "title"
+    t.string "contentful_id"
+    t.integer "revision", default: 0
+    t.string "longitude"
+    t.string "latitude"
+    t.datetime "due"
+    t.index ["contentful_id"], name: "index_missions_on_contentful_id"
   end
 
 end

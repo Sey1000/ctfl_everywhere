@@ -6,8 +6,8 @@ json.sys do
   json.type "Array"
 end
 json.total @missions.length
-json.skip 0 # TODO: make it dynamic in the future
-json.limit 100 # TODO: make it dynamic in the future
+json.skip 0 # TODO: make it dynamic from params in the future
+json.limit 100 # TODO: make it dynamic from params in the future
 json.items @missions do |mission|
   json.sys do
     json.space do
