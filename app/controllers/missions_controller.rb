@@ -4,6 +4,9 @@ class MissionsController < ApplicationController
   def index
     # @missions = @client.entries
     @missions = Mission.all
+
+    # TODO: order by created_at
+
     render :index, status: 200
     # render json: @client.entries, status: 200
     # TODO: get from local storage instead
@@ -42,6 +45,8 @@ class MissionsController < ApplicationController
     end
 
     # Handle nextPageUrl
+
+    # TODO: what to render?
 
     render json: sync, status: 200
 
