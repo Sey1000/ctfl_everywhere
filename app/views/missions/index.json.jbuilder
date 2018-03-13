@@ -17,11 +17,11 @@ json.items @missions do |mission|
         json.id ENV['SPACE_ID']
       end
     end
-    json.id "TODO: id from contentful"
+    json.id mission.contentful_id
     json.type "Entry"
     json.createdAt mission.created_at
     json.updatedAt mission.updated_at
-    json.revision "TODO: revision from contentful"
+    json.revision mission.revision
     json.contentType do
       json.sys do
         json.type "Link"
@@ -34,9 +34,9 @@ json.items @missions do |mission|
   json.fields do
     json.title mission.title
     json.location do
-      json.lon "TODO: lon from contentful"
-      json.lat "TOOD: lat from contentful"
+      json.lon mission.longitude
+      json.lat mission.latitude
     end
-    json.due "TODO: due from contentful"
+    json.due mission.due
   end
 end
