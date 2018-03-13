@@ -1,6 +1,10 @@
 class MissionsController < ApplicationController
   before_action: :set_client
 
+  def index
+    render json: @client.entries, status: 200
+  end
+
   private
 
   def set_client
