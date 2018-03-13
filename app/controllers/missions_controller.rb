@@ -2,7 +2,9 @@ class MissionsController < ApplicationController
   before_action :set_client
 
   def index
-    render json: @client.entries, status: 200
+    @missions = @client.entries
+    render :index, status: 200
+    # render json: @client.entries, status: 200
     # TODO: get from local storage instead
   end
 
