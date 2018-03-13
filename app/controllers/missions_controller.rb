@@ -2,7 +2,8 @@ class MissionsController < ApplicationController
   before_action :set_client
 
   def index
-    @missions = @client.entries
+    # @missions = @client.entries
+    @missions = Mission.all
     render :index, status: 200
     # render json: @client.entries, status: 200
     # TODO: get from local storage instead
@@ -10,7 +11,12 @@ class MissionsController < ApplicationController
 
   def sync
     # Check if there is nextSyncUrl. Otherwise perform reset
-
+    @client.entries.each_item do |entry|
+      puts "====="
+      this_entry = @client.entry(entry.id)
+      p this_entry.revision
+    end
+    render json: @client.entries, status: 200
   end
 
   def reset
