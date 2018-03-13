@@ -6,8 +6,8 @@ json.sys do
   json.type "Array"
 end
 json.total @missions.length
-json.skip 0
-json.limit 100
+json.skip 0 # TODO: make it dynamic in the future
+json.limit 100 # TODO: make it dynamic in the future
 json.items @missions do |mission|
   json.sys do
     json.space do
@@ -25,11 +25,11 @@ json.items @missions do |mission|
     json.contentType do
       json.sys do
         json.type "Link"
-        json.linkType "contentType"
+        json.linkType "ContentType"
         json.id "mission" # or .class.name
       end
     end
-    json.locale "TODO: locale from contentful"
+    json.locale "en-US" # TODO: make it dynamic in the future
   end
   json.fields do
     json.title mission.title
