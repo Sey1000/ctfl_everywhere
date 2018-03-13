@@ -6,11 +6,24 @@ class MissionsController < ApplicationController
     # TODO: get from local storage instead
   end
 
-  def synch
+  def sync
+    # Check if there is nextSyncUrl. Otherwise perform reset
 
   end
 
   def reset
+    # Check if there is internet connection
+    # if internet_connection => Empty all Mission, send initial synchronization request
+    # else => error: no internet connection
+    sync = @client.sync(initial: true) # type: all(default)
+    sync.each_item do |entry|
+      puts "entry is"
+      p entry
+    end
+
+    # Handle nextPageUrl
+
+    render json: sync, status: 200
 
   end
 
