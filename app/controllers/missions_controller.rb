@@ -15,10 +15,16 @@ class MissionsController < ApplicationController
     # Check if there is internet connection
     # if internet_connection => Empty all Mission, send initial synchronization request
     # else => error: no internet connection
+
     sync = @client.sync(initial: true) # type: all(default)
+
     sync.each_item do |entry|
-      puts "entry is"
-      p entry
+      # Make each entry into ruby object
+      puts "====="
+      p entry.title
+      p entry.due
+      p entry.location.lat
+      p entry.location.lon
     end
 
     # Handle nextPageUrl
