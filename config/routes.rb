@@ -3,5 +3,7 @@ Rails.application.routes.draw do
   root to: 'missions#index'
   defaults format: :json do
     get '/missions', to: 'missions#index'
+    get '/missions/synch', to: 'missions#synch'
+    get 'missions/reset', to: 'missions#reset'
   end
 end
