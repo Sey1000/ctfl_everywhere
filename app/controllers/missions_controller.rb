@@ -1,8 +1,13 @@
+require 'open-uri'
+
 class MissionsController < ApplicationController
   before_action :set_client
 
   def index
     # @missions = @client.entries
+    puts Mission.count
+    fetch_all if Mission.count == 0
+    # TODO: check internet connection
     @missions = Mission.all
 
     # TODO: order by created_at
@@ -23,11 +28,30 @@ class MissionsController < ApplicationController
   end
 
   def reset
-    # Check if there is internet connection
+    # TODO: Check if there is internet connection
     # if internet_connection => Empty all Mission, send initial synchronization request
     # else => error: no internet connection
     Mission.destroy_all
+    fetch_all
 
+    # Handle nextPageUrl
+    # TODO: what to render?
+
+    render json: sync, status: 200
+
+  end
+
+  private
+
+  def set_client
+    @client ||= Contentful::Client.new(
+      space: ENV['SPACE_ID'],
+      access_token: ENV['CONTENT_DELIVERY_API_TOKEN'],
+      dynamic_entries: :auto
+    )
+  end
+
+  def fetch_all
     sync = @client.sync(initial: true) # type: all(default)
 
     sync.each_item do |entry|
@@ -43,22 +67,13 @@ class MissionsController < ApplicationController
           )
       end
     end
-
-    # Handle nextPageUrl
-
-    # TODO: what to render?
-
-    render json: sync, status: 200
-
   end
 
-  private
-
-  def set_client
-    @client ||= Contentful::Client.new(
-      space: ENV['SPACE_ID'],
-      access_token: ENV['CONTENT_DELIVERY_API_TOKEN'],
-      dynamic_entries: :auto
-    )
+  def internet_connection?
+    begin
+      true if open("https://cdn.contentful.com")
+    rescue
+      false
+    end
   end
 end
