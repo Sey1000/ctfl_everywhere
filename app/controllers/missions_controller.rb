@@ -4,13 +4,13 @@ class MissionsController < ApplicationController
   before_action :set_client, except: :index
 
   def index
-    if internet_connection?
-      puts "--------hi"
-      set_client
-      fetch_all if Mission.count == 0
-      fetch_new
-      fetch_deleted
-    end
+    # Makes /missions more dynamic
+    # if internet_connection?
+    #   set_client
+    #   fetch_all if Mission.count == 0
+    #   fetch_new
+    #   fetch_deleted
+    # end
     @missions = Mission.order(created_at: :desc) # most recent mission first
     render :index, status: 200
   end
