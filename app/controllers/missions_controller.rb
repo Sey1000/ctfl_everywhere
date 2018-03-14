@@ -6,22 +6,15 @@ class MissionsController < ApplicationController
   def index
     if internet_connection?
       set_client
-      fetch_all if Mission.count == 0
-      # TODO: sync if internet_connection
+      Mission.count == 0 ? fetch_all : fetch_new
     end
-
-    # Newest mission first
-    @missions = Mission.order(created_at: :desc)
-    # Oldest mission first
-    # @missions = Mission.order(:created_at)
-
+    @missions = Mission.order(created_at: :desc) # most recent mission first
     render :index, status: 200
   end
 
   def sync
-    new_entries = @client.sync(type: :entry)
-    p new_entries
-    render json: new_entries
+    fetch_all if Mission.count == 0
+    render json: fetch_new, status: 200
   end
 
   def reset
@@ -29,9 +22,7 @@ class MissionsController < ApplicationController
     # if internet_connection => Empty all Mission, send initial synchronization request
     # else => error: no internet connection
     Mission.destroy_all
-
     # TODO: Handle nextPageUrl
-    # TODO: what to render?
     render json: fetch_all, status: 200
   end
 
@@ -63,6 +54,26 @@ class MissionsController < ApplicationController
 
     set_sync_token(sync_init.next_sync_url)
     sync_init
+  end
+
+  def fetch_new
+    token = SyncToken.instance.token
+    sync_incr = @client.sync(sync_token: token)
+    sync_incr.each_item do |entry|
+      unless Mission.find_by(contentful_id: entry.id)
+        Mission.create(
+          title: entry.title,
+          contentful_id: entry.id,
+          revision: entry.revision,
+          longitude: entry.location.lon,
+          latitude: entry.location.lat,
+          due: entry.due
+          )
+      end
+    end
+
+    set_sync_token(sync_incr.next_sync_url)
+    sync_incr
   end
 
   def set_sync_token(url)
