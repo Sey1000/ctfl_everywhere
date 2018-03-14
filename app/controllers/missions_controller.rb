@@ -14,7 +14,9 @@ class MissionsController < ApplicationController
 
   def sync
     fetch_all if Mission.count == 0
-    render json: fetch_new, status: 200
+    fetch_new
+    @missions = Mission.order(created_at: :desc)
+    render :index, status: 200
   end
 
   def reset
@@ -37,7 +39,7 @@ class MissionsController < ApplicationController
   end
 
   def fetch_all
-    sync_init = @client.sync(initial: true) # type: all(default)
+    sync_init = @client.sync(initial: true, type: 'Entry') # type: all(default)
     sync_init.each_item do |entry|
       # Make each entry into ruby object
       unless Mission.find_by(contentful_id: entry.id)
@@ -60,6 +62,8 @@ class MissionsController < ApplicationController
     token = SyncToken.instance.token
     sync_incr = @client.sync(sync_token: token)
     sync_incr.each_item do |entry|
+      puts "=======New entry==========="
+      p entry
       unless Mission.find_by(contentful_id: entry.id)
         Mission.create(
           title: entry.title,
@@ -80,7 +84,6 @@ class MissionsController < ApplicationController
     re = /.+sync_token=(?<token>.*)/
     token = url.match(re)[:token]
     SyncToken.instance.update(token: token)
-    p SyncToken.instance
   end
 
   def internet_connection?
