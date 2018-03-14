@@ -19,13 +19,9 @@ class MissionsController < ApplicationController
   end
 
   def sync
-    # Check if there is nextSyncUrl. Otherwise perform reset
-    @client.entries.each_item do |entry|
-      puts "====="
-      this_entry = @client.entry(entry.id)
-      p this_entry.revision
-    end
-    render json: @client.entries, status: 200
+    new_entries = @client.sync(type: :entry)
+    p new_entries
+    render json: new_entries
   end
 
   def reset
@@ -53,8 +49,6 @@ class MissionsController < ApplicationController
     all_entries = @client.sync(initial: true) # type: all(default)
     all_entries.each_item do |entry|
       # Make each entry into ruby object
-
-      # TODO: refactor after sync works
       unless Mission.find_by(contentful_id: entry.id)
         Mission.create(
           title: entry.title,
