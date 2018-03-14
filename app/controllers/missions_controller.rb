@@ -7,6 +7,7 @@ class MissionsController < ApplicationController
     if internet_connection?
       set_client
       fetch_all if Mission.count == 0
+      # TODO: sync if internet_connection
     end
 
     # Newest mission first
@@ -32,13 +33,10 @@ class MissionsController < ApplicationController
     # if internet_connection => Empty all Mission, send initial synchronization request
     # else => error: no internet connection
     Mission.destroy_all
-    fetch_all
 
-    # Handle nextPageUrl
+    # TODO: Handle nextPageUrl
     # TODO: what to render?
-
-    render json: sync, status: 200
-
+    render json: fetch_all, status: 200
   end
 
   private
@@ -52,10 +50,11 @@ class MissionsController < ApplicationController
   end
 
   def fetch_all
-    sync = @client.sync(initial: true) # type: all(default)
-
-    sync.each_item do |entry|
+    all_entries = @client.sync(initial: true) # type: all(default)
+    all_entries.each_item do |entry|
       # Make each entry into ruby object
+
+      # TODO: refactor after sync works
       unless Mission.find_by(contentful_id: entry.id)
         Mission.create(
           title: entry.title,
@@ -67,6 +66,7 @@ class MissionsController < ApplicationController
           )
       end
     end
+    all_entries
   end
 
   def internet_connection?

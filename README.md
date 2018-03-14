@@ -33,5 +33,3 @@ rails s
 1. [All entries](http://localhost:3000/missions)
 2. [Incremental Sync](http://localhost:3000/missions/sync) --> not functional yet
 3. [Reset](http://localhost:3000/missions/reset)
-
-(For now you need to hit "Reset" before being able to see data in "All entries")
