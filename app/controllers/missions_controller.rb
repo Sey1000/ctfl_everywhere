@@ -46,8 +46,8 @@ class MissionsController < ApplicationController
   end
 
   def fetch_all
-    all_entries = @client.sync(initial: true) # type: all(default)
-    all_entries.each_item do |entry|
+    sync_init = @client.sync(initial: true) # type: all(default)
+    sync_init.each_item do |entry|
       # Make each entry into ruby object
       unless Mission.find_by(contentful_id: entry.id)
         Mission.create(
@@ -60,7 +60,16 @@ class MissionsController < ApplicationController
           )
       end
     end
-    all_entries
+
+    set_sync_token(sync_init.next_sync_url)
+    sync_init
+  end
+
+  def set_sync_token(url)
+    re = /.+sync_token=(?<token>.*)/
+    token = url.match(re)[:token]
+    SyncToken.instance.update(token: token)
+    p SyncToken.instance
   end
 
   def internet_connection?

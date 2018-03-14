@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180313181711) do
+ActiveRecord::Schema.define(version: 20180314141439) do
 
   create_table "missions", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -22,6 +22,12 @@ ActiveRecord::Schema.define(version: 20180313181711) do
     t.string "latitude"
     t.datetime "due"
     t.index ["contentful_id"], name: "index_missions_on_contentful_id"
+  end
+
+  create_table "sync_tokens", force: :cascade do |t|
+    t.string "token"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
 end
