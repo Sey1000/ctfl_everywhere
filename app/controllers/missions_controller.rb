@@ -15,6 +15,7 @@ class MissionsController < ApplicationController
   def sync
     fetch_all if Mission.count == 0
     fetch_new
+    fetch_deleted
     @missions = Mission.order(created_at: :desc)
     render :index, status: 200
   end
@@ -24,8 +25,10 @@ class MissionsController < ApplicationController
     # if internet_connection => Empty all Mission, send initial synchronization request
     # else => error: no internet connection
     Mission.destroy_all
+    fetch_all
     # TODO: Handle nextPageUrl
-    render json: fetch_all, status: 200
+    @missions = Mission.order(created_at: :desc)
+    render :index, status: 200
   end
 
   private
@@ -39,7 +42,7 @@ class MissionsController < ApplicationController
   end
 
   def fetch_all
-    sync_init = @client.sync(initial: true, type: 'Entry') # type: all(default)
+    sync_init = @client.sync(initial: true, type: 'Entry')
     sync_init.each_item do |entry|
       # Make each entry into ruby object
       unless Mission.find_by(contentful_id: entry.id)
@@ -77,7 +80,18 @@ class MissionsController < ApplicationController
     end
 
     set_sync_token(sync_incr.next_sync_url)
-    sync_incr
+  end
+
+  def fetch_deleted
+    sync_del = @client.sync(initial: true, type: 'Deletion')
+    sync_del.each_item do |entry|
+      puts "========Deleted========"
+      p entry
+      mission = Mission.find_by(contentful_id: entry.id)
+      mission.destroy if mission
+    end
+
+    set_sync_token(sync_del.next_sync_url)
   end
 
   def set_sync_token(url)
