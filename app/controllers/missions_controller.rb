@@ -5,8 +5,11 @@ class MissionsController < ApplicationController
 
   def index
     if internet_connection?
+      puts "--------hi"
       set_client
-      Mission.count == 0 ? fetch_all : fetch_new
+      fetch_all if Mission.count == 0
+      fetch_new
+      fetch_deleted
     end
     @missions = Mission.order(created_at: :desc) # most recent mission first
     render :index, status: 200
