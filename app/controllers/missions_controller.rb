@@ -1,20 +1,20 @@
 require 'open-uri'
 
 class MissionsController < ApplicationController
-  before_action :set_client
+  before_action :set_client, except: :index
 
   def index
-    # @missions = @client.entries
-    puts Mission.count
-    fetch_all if Mission.count == 0
-    # TODO: check internet connection
-    @missions = Mission.all
+    if internet_connection?
+      set_client
+      fetch_all if Mission.count == 0
+    end
 
-    # TODO: order by created_at
+    # Newest mission first
+    @missions = Mission.order(created_at: :desc)
+    # Oldest mission first
+    # @missions = Mission.order(:created_at)
 
     render :index, status: 200
-    # render json: @client.entries, status: 200
-    # TODO: get from local storage instead
   end
 
   def sync
